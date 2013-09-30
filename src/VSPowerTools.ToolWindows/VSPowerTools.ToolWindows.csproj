@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0F0271D8-AA78-46FA-96E8-5E0ED0F89F76}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VSPowerTools.ToolWindows</RootNamespace>
+    <AssemblyName>VSPowerTools.ToolWindows</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\VSPowerTools\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Expression.Platform.WPF">
+      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\PrivateAssemblies\Microsoft.Expression.Platform.WPF.DLL</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\VSPowerTools\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="General\ClipboardBox.xaml.cs">
+      <DependentUpon>ClipboardBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LanguageMassEditor\BusinessObjects\InterfaceObject.cs" />
+    <Compile Include="LanguageMassEditor\BusinessObjects\Ressource.cs" />
+    <Compile Include="LanguageMassEditor\BusinessObjects\Settings.cs" />
+    <Compile Include="LanguageMassEditor\Code\DirectoryMonitor.cs" />
+    <Compile Include="LanguageMassEditor\Code\Extensions.cs" />
+    <Compile Include="LanguageMassEditor\Code\TranslatableSelection.cs" />
+    <Compile Include="LanguageMassEditor\Code\TranslatableSelector.cs" />
+    <Compile Include="LanguageMassEditor\LanguageMassEditor.xaml.cs">
+      <DependentUpon>LanguageMassEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LanguageMassEditor\UserControls\LanguageControl.xaml.cs">
+      <DependentUpon>LanguageControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LanguageMassEditor\UserControls\LanguageMassEditorNewItemControl.xaml.cs">
+      <DependentUpon>LanguageMassEditorNewItemControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LanguageMassEditor\ViewModels\LanguageMassEditorViewModel.cs" />
+    <Compile Include="LanguageMassEditor\ViewModels\ResourceViewModel.cs" />
+    <Compile Include="LanguageMassEditor\ViewModels\RessourceCollection.cs" />
+    <Compile Include="LanguageMassEditor\ViewModels\ResxAttributeCollection.cs" />
+    <Compile Include="LanguageMassEditor\ViewModels\ResxAttributeViewModel.cs" />
+    <Compile Include="LanguageMassEditor\ViewModels\ResxNodeCollection.cs" />
+    <Compile Include="LanguageMassEditor\ViewModels\ResxNodeViewModel.cs" />
+    <Compile Include="LanguageMassEditor\Windows\LMESettings.xaml.cs">
+      <DependentUpon>LMESettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="General\ClipboardBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LanguageMassEditor\LanguageMassEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="LanguageMassEditor\Styles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LanguageMassEditor\UserControls\LanguageControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="LanguageMassEditor\UserControls\LanguageMassEditorNewItemControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="LanguageMassEditor\Windows\LMESettings.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AMLib 4.0.0.0\AMLib.Wpf\AMLib.Wpf.csproj">
+      <Project>{D1FE2CD8-4311-4B81-BB78-E57A5E155D13}</Project>
+      <Name>AMLib.Wpf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\AMLib 4.0.0.0\AMLib\AMLib.csproj">
+      <Project>{CE80D2E9-DFA1-4024-87DE-B6F1D21C9482}</Project>
+      <Name>AMLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSPowerTools\VSPowerTools.ViewModels\VSPowerTools.ViewModels.csproj">
+      <Project>{CF982047-E451-4AF5-B311-CB54F14D7736}</Project>
+      <Name>VSPowerTools.ViewModels</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="LanguageMassEditor\Images\reload.png" />
+    <Resource Include="LanguageMassEditor\Images\save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="LanguageMassEditor\Images\add.png" />
+    <Resource Include="LanguageMassEditor\Images\settings.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

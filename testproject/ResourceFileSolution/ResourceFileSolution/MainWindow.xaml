@@ -1,0 +1,12 @@
+﻿<Window x:Class="ResourceFileSolution.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Usercontrols="clr-namespace:ResourceFileSolution.Usercontrols"
+        xmlns:Resource1="clr-namespace:ResourceFileSolution;assembly=ResourceFileSolution"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+		<Usercontrols:TestControl></Usercontrols:TestControl>
+		<TextBlock Text="{x:Static Resource1:Resource1.ResourceNames22}" />
+		<TextBlock Text="wasdf" />
+	</Grid>
+</Window>

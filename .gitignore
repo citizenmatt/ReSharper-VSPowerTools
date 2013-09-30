@@ -1,0 +1,13 @@
+_ReSharper.*/
+
+obj/
+
+src/**/bin/[Dd]ebug/*
+src/**/bin/[Rr]elease/*
+
+!src/**/AMLib.dll
+!src/**/AMLib.Wpf.dll
+
+*.suo
+
+*.csproj.user

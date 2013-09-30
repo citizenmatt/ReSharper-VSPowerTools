@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<actions>
+  <insert group-id="ReSharper" position="last">
+    <action-group id="VSPowerTools" text="VSPowerTools">
+      <action id="VSPowerTools.About" text="About VSPowerTools"/>
+	  <seperator/>
+      <action id="VSPowerTools.LanguageMassEditorMainWindow" text="Language Mass editor"/>
+      <!-- to break up elements use <separator/> -->
+    </action-group>
+  </insert>
+</actions>

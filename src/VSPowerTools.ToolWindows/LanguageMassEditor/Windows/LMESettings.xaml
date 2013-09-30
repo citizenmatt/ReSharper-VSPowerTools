@@ -1,0 +1,43 @@
+﻿<AMLib:ThemeWindow x:Class="VSPowerTools.ToolWindows.LanguageMassEditor.Windows.LMESettings"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Name="Self"
+        DataContext="{Binding ElementName=Self, Path=Settings}"
+		IsMaximizable="False"
+		IsMinimizable="False"
+        Title="Settings" Padding="10" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Topmost="True" ResizeMode="NoResize" xmlns:my="clr-namespace:Microsoft.Expression.Platform.WPF.InstanceBuilders;assembly=Microsoft.Expression.Platform.WPF"
+                                    xmlns:AMLib="http://schemas.amlib.com/winfx/2006/xaml/presentation">
+	<Window.Resources>
+
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="..\Styles.xaml"></ResourceDictionary>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Window.Resources>
+	<StackPanel>
+        <GroupBox Header="Filter:">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="5"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="26"/>
+                    <RowDefinition Height="26"/>
+                    <RowDefinition Height="26"/>
+                    <RowDefinition Height="26"/>
+                </Grid.RowDefinitions>
+
+                <Label Target="{Binding ElementName=cb1}" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Content="Case sensitive"/>
+                <CheckBox VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsSearchCaseSensitive}" />
+                <Label VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Content="Filter empty"/>
+                <CheckBox VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" IsChecked="{Binding IsNonEmpty}" />
+                <Label VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Content="Regular expression"/>
+                <CheckBox VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsRegexSearch}" />
+                <Label VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" Content="Fulltext search"/>
+                <CheckBox VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" IsChecked="{Binding IsFullTextSearch}" />
+            </Grid>
+        </GroupBox>
+    </StackPanel>
+</AMLib:ThemeWindow>

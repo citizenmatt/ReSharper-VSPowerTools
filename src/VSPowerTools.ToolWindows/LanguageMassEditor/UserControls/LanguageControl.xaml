@@ -1,0 +1,26 @@
+﻿<DockPanel x:Class="VSPowerTools.ToolWindows.LanguageMassEditor.UserControls.LanguageControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:AMLib="http://schemas.amlib.com/winfx/2006/xaml/presentation"
+           xmlns:ViewModels="clr-namespace:VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels"
+           mc:Ignorable="d" 
+			 Name="Root"
+             d:DesignHeight="365" d:DesignWidth="832">
+	<DockPanel.Resources>
+		<ObjectDataProvider ObjectType="{x:Type ViewModels:ResxNodeViewModel}" MethodName="GetResxNodeViewModel" x:Key="demo"/>
+	</DockPanel.Resources>
+	<DockPanel d:DataContext="{StaticResource ResourceKey=demo}" DataContext="{Binding ElementName=Root, Path=DisplayNodeView}">
+		<ItemsControl Focusable="False" Name="icRoot" ItemsSource="{Binding Path=Attributes}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate DataType="{x:Type ViewModels:ResxAttributeViewModel}">
+					<DockPanel Margin="0,0,0,6">
+						<TextBlock Height="24" Padding="0,2,5,0" VerticalAlignment="Bottom" DockPanel.Dock="Left" Width="140" TextAlignment="Right" Text="{Binding Language}"/>
+						<TextBox Height="26" VerticalContentAlignment="Center" AMLib:FocusableExtension.SelectAllOnFocus="True" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"/>
+					</DockPanel>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+	</DockPanel>
+</DockPanel>
