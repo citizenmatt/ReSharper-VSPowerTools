@@ -3,6 +3,7 @@ using System.Threading;
 using System.Windows;
 using AMLib.Wpf.Controls;
 using VSPowerTools.ToolWindows.LanguageMassEditor;
+using LanguageMassEditor = VSPowerTools.ToolWindows.LanguageMassEditor.UserControls.LanguageMassEditor;
 
 namespace VSPowerTools.TestWindows
 {

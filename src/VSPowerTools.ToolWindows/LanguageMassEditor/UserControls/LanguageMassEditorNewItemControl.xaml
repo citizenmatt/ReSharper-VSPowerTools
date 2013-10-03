@@ -3,10 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels"
              mc:Ignorable="d" 
-			 d:DataContext="{d:DesignInstance Type=ViewModels:LanguageMassEditorViewModel}"
+			 d:DataContext="{d:DesignInstance Type=viewModels:LanguageMassEditorViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
-	<Grid>
+	<UserControl.Resources>
+		<ResourceDictionary Source="../Styles.xaml"></ResourceDictionary>
+	</UserControl.Resources>
+	<Grid Background="{StaticResource BrushGray2}">
 		<Grid.Style>
 			<Style TargetType="{x:Type Grid}">
 				<Setter Property="IsEnabled" Value="True"></Setter>
@@ -20,24 +24,29 @@
 		<Border BorderBrush="Transparent" BorderThickness="0" Margin="5">
 			<DockPanel>
 				<ComboBox DockPanel.Dock="Top" 
-						  DisplayMemberPath="RessourceName"
-						  ItemsSource="{Binding Path=Ressources, Mode=OneWay}" 
-						  SelectedItem="{Binding Path=Ressources/, Mode=TwoWay}" IsSynchronizedWithCurrentItem="True"/>
+				          ItemsSource="{Binding Path=RessourcesAssemblyFilterView, Mode=OneWay}" 
+						  SelectedItem="{Binding Path=RessourcesAssemblyFilterView/, Mode=TwoWay}" IsSynchronizedWithCurrentItem="True">
+					<ComboBox.ItemTemplate>
+						<DataTemplate DataType="{x:Type viewModels:ResourceViewModel}">
+							<TextBlock Text="{Binding RessourceName}" Foreground="{StaticResource BrushGray13}"></TextBlock>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
 				<Grid DockPanel.Dock="Top" Margin="0,5,0,0">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="Auto"/>
 						<ColumnDefinition Width="2*"/>
 					</Grid.ColumnDefinitions>
 					<Label Grid.Column="0" Content="Name:"/>
-					<TextBox Grid.Column="1" Text="{Binding Path=Ressources/CreatorNode.Tag, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" VerticalContentAlignment="Center"/>
+					<TextBox Grid.Column="1" Text="{Binding Path=RessourcesAssemblyFilterView/CreatorNode.Tag, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" VerticalContentAlignment="Center"/>
 				</Grid>
-				<Button IsDefault="True" DockPanel.Dock="Bottom" Content="anlegen" Command="{Binding Path=Ressources/AppendCreatorNodeCommand, NotifyOnSourceUpdated=True}"/>
+				<Button IsDefault="True" DockPanel.Dock="Bottom" Content="Create" Command="{Binding Path=RessourcesAssemblyFilterView/AppendCreatorNodeCommand, NotifyOnSourceUpdated=True}"/>
 				<Grid Margin="0,5,0,5">
-					<ItemsControl ItemsSource="{Binding Path=Ressources/CreatorNode.Attributes, Mode=OneWay}">
+					<ItemsControl ItemsSource="{Binding Path=RessourcesAssemblyFilterView/CreatorNode.Attributes, Mode=OneWay}">
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
 								<StackPanel>
-									<TextBlock Text="{Binding Path=Language}"/>
+									<TextBlock Text="{Binding Path=Language}" Foreground="{StaticResource BrushGray13}"/>
 									<TextBox Text="{Binding Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 								</StackPanel>
 							</DataTemplate>

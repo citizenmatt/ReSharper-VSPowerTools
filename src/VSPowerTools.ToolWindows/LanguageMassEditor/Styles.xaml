@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:AMLib="http://schemas.amlib.com/winfx/2006/xaml/presentation"
-                    xmlns:instanceBuilders="clr-namespace:Microsoft.Expression.Platform.WPF.InstanceBuilders;assembly=Microsoft.Expression.Platform.WPF">
+                    xmlns:instanceBuilders="clr-namespace:Microsoft.Expression.Platform.WPF.InstanceBuilders;assembly=Microsoft.Expression.Platform.WPF"
+                    xmlns:viewModels="clr-namespace:VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels">
 
 
 	<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
@@ -94,7 +95,7 @@
 		</ControlTemplate.Triggers>
 	</ControlTemplate>
 
-	<Style TargetType="GroupBox">
+	<Style TargetType="{x:Type GroupBox}">
 		<Setter Property="BorderThickness" Value="0"></Setter>
 		<Setter Property="Foreground" Value="{StaticResource BrushGray13}"></Setter>
 		<Setter Property="Background" Value="{StaticResource BrushGray5}"></Setter>
@@ -109,8 +110,121 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
+	
+	<Style TargetType="{x:Type ComboBox}">
+		<Setter Property="ItemTemplate">
+			<Setter.Value>
+				<DataTemplate>
+					<TextBlock Foreground="{StaticResource BrushGray13}" Text="{Binding}"></TextBlock>
+				</DataTemplate>
+			</Setter.Value>
+		</Setter>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ComboBox">
+					<Grid>
+						<ToggleButton
+											ClickMode="Press"
+											Name="ToggleButton"
+											IsChecked="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+											Focusable="False"
+											Template="{StaticResource ComboBoxToggleButtonTemplate}">
+							<ToggleButton.Style>
+								<Style TargetType="ToggleButton">
+									<Setter Property="Cursor" Value="Hand"></Setter>
+									<Style.Triggers>
+										<Trigger Property="ToggleButton.IsChecked" Value="True">
+											<Setter Property="Cursor" Value="{x:Null}"></Setter>
+										</Trigger>
+									</Style.Triggers>
+								</Style>
+							</ToggleButton.Style>
+						</ToggleButton>
+						<ContentPresenter
+							Margin="3,3,28,3"
+							HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+							Name="ContentSite"
+							VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+							ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
+							Content="{TemplateBinding ComboBox.SelectionBoxItem}"
+							IsHitTestVisible="False" />
+						<Popup
+							Placement="Bottom"
+							Name="Popup"
+							Focusable="False"               
+							AllowsTransparency="True"               
+							IsOpen="{TemplateBinding ComboBox.IsDropDownOpen}"
+							PopupAnimation="Slide">
+							<Grid
+								MinWidth="{TemplateBinding FrameworkElement.ActualWidth}"
+								MaxHeight="{TemplateBinding ComboBox.MaxDropDownHeight}"
+								Name="DropDown"
+								SnapsToDevicePixels="True">
+								<Border
+									BorderBrush="{StaticResource BrushGray15}"
+									BorderThickness="1,0,1,1"
+									Name="DropDownBorder"
+									Background="{StaticResource BrushGray4}">
+									<ScrollViewer Margin="0" SnapsToDevicePixels="True">
+										<ItemsPresenter Cursor="Hand" Margin="0,0,22,0"
+											KeyboardNavigation.DirectionalNavigation="Contained" />
+									</ScrollViewer>
+								</Border>
+							</Grid>
+						</Popup>
+					</Grid>
+					<ControlTemplate.Triggers>
+						<Trigger Property="ItemsControl.HasItems" Value="False">
+							<Setter Property="FrameworkElement.MinHeight" TargetName="DropDownBorder" Value="95"/>
+						</Trigger>
+						<Trigger Property="UIElement.IsEnabled" Value="False">
+							<Setter Property="TextElement.Foreground" Value="{StaticResource BrushGray15}"/>
+						</Trigger>
+						<Trigger Property="ItemsControl.IsGrouping" Value="True">
+							<Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+						</Trigger>
+						<Trigger Property="Window.AllowsTransparency" SourceName="Popup" Value="True">
+							<Setter Property="Border.CornerRadius" TargetName="DropDownBorder" Value="0"/>
+							<Setter Property="Border.BorderThickness" TargetName="DropDownBorder" Value="1,0,1,1"/>
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+		<Setter Property="MinWidth" Value="150"></Setter>
+		<Style.Triggers>
+			<Trigger Property="Validation.HasError" Value="true">
+				<Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}" />
+			</Trigger>
+		</Style.Triggers>
+	</Style>
+	
+	<DataTemplate x:Key="ResourceViewModelComboBoxTemplate" DataType="{x:Type viewModels:ResourceViewModel}">
+		<Grid Margin="10,0" x:Name="Grid" Background="Transparent">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="1*"></ColumnDefinition>
+				<ColumnDefinition Width="Auto"></ColumnDefinition>
+				<ColumnDefinition Width="Auto"></ColumnDefinition>
+				<ColumnDefinition Width="46"></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+			<TextBlock Grid.Column="0" Foreground="{StaticResource BrushGray13}" Text="{Binding Path=RessourceName}"></TextBlock>
+			<Border Grid.Column="1" x:Name="DirtyMarker" Visibility="Collapsed">
+				<Ellipse Width="10" Height="10" Fill="Orange" Margin="0,0,10,0"></Ellipse>
+			</Border>
+			<TextBlock Grid.Column="2" Foreground="{StaticResource BrushGray13}" HorizontalAlignment="Right" Text="Nodes"></TextBlock>
+			<TextBlock Grid.Column="3" Foreground="{StaticResource BrushGray13}" HorizontalAlignment="Right" Text="{Binding Path=Nodes.Count, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"></TextBlock>
+		</Grid>
+		<DataTemplate.Triggers>
+			<DataTrigger Binding="{Binding Path=IsDirty}" Value="True">
+				<Setter TargetName="DirtyMarker" Property="Visibility" Value="Visible"></Setter>
+			</DataTrigger>
+		</DataTemplate.Triggers>
+	</DataTemplate>
 
 	<Style TargetType="{x:Type Button}">
+		<Setter Property="VerticalContentAlignment" Value="Center"></Setter>
+		<Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
+		<Setter Property="Foreground" Value="White"></Setter>
 		<Setter Property="Background" Value="{StaticResource GradientLightToDark}"/>
 		<Setter Property="BorderBrush" Value="{StaticResource GradientDarkToLight}"/>
 		<Setter Property="BorderThickness" Value="1"/>
@@ -123,7 +237,7 @@
 							BorderThickness="{TemplateBinding BorderThickness}"
 							Background="{TemplateBinding Background}"
 							BorderBrush="{TemplateBinding BorderBrush}">
-						<ContentPresenter></ContentPresenter>
+						<ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"></ContentPresenter>
 					</Border>
 					<ControlTemplate.Triggers>
 						<Trigger Property="IsMouseOver" Value="True">

@@ -1,0 +1,347 @@
+﻿<UserControl x:Class="VSPowerTools.ToolWindows.LanguageMassEditor.UserControls.LanguageMassEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             x:Name="Self"
+             xmlns:Controls="clr-namespace:AMLib.Wpf.Controls;assembly=AMLib.Wpf"
+             xmlns:viewModels="clr-namespace:VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels"
+             xmlns:userControls="clr-namespace:VSPowerTools.ToolWindows.LanguageMassEditor.UserControls"
+             xmlns:businessObjects="clr-namespace:VSPowerTools.ToolWindows.LanguageMassEditor.BusinessObjects"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="1000">
+	<UserControl.Resources>
+
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="../Styles.xaml"></ResourceDictionary>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</UserControl.Resources>
+	<UserControl.DataContext>
+		<viewModels:LanguageMassEditorViewModel/>
+	</UserControl.DataContext>
+	<AdornerDecorator>
+		<Controls:Overlay Name="overlay">
+			<Controls:Overlay.IsOverlayContentVisible>
+				<MultiBinding Converter="{StaticResource ResourceKey=AnyBooleanConverter}" ConverterParameter="True">
+					<Binding Path="IsApplicationBusy" Mode="OneWay"/>
+					<Binding Path="Ressources/IsLoading" Mode="OneWay"/>
+					<Binding Path="Ressources/IsSaving" Mode="OneWay"/>
+				</MultiBinding>
+			</Controls:Overlay.IsOverlayContentVisible>
+			<Controls:Overlay.OverlayContent>
+				<Grid Opacity="0.7" Background="DarkGray">
+					<TextBlock Foreground="White" FontWeight="ExtraBold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="30" Text="Loading ..."/>
+				</Grid>
+			</Controls:Overlay.OverlayContent>
+
+			<Grid>
+				
+				<!-- Horizontal Layout -->
+				<DockPanel x:Name="HorizontalLayout">
+					<StackPanel DockPanel.Dock="Top" Style="{StaticResource ResourceKey=spToolStrip}">
+						<DockPanel Margin="4" >
+							<Button DockPanel.Dock="Right" Margin="6,0,0,0" Width="26" Height="26"  Command="{Binding Ressources/SaveCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" >
+								<Button.Style>
+									<Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding Ressources/IsSaving, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+												<Setter Property="Background" Value="DarkRed"/>
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</Button.Style>
+								<Image ToolTip="Save" Source="../Images/save.png" Width="20"/>
+							</Button>
+							<Button Background="GreenYellow" Width="26" ToolTip="Saving"  DockPanel.Dock="Right" Margin="6,0,0,0" Visibility="{Binding Ressources/IsSaving, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+								<Image Source="../Images/reload.png" Width="20"/>
+							</Button>
+							<Button DockPanel.Dock="Right" Width="26" Margin="6,0,0,0" Command="{Binding Path=Ressources/LoadCommand, Mode=OneWay}" ToolTip="Reload">
+								<Image Source="../Images/reload.png" Width="20"/>
+							</Button>
+							<DockPanel LastChildFill="True" >
+								<ComboBox HorizontalContentAlignment="Stretch" 
+									  VerticalContentAlignment="Center" 
+									  Focusable="False" 
+									  ItemsSource="{Binding RessourcesView, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True, IsAsync=True}" 
+									  ItemTemplate="{StaticResource ResourceViewModelComboBoxTemplate}"
+									  IsSynchronizedWithCurrentItem="True">
+								</ComboBox>
+							</DockPanel>
+						</DockPanel>
+					</StackPanel>
+					<DockPanel Background="{x:Static SystemColors.DesktopBrush}">
+						<DockPanel DockPanel.Dock="Left" MinWidth="200" Width="400" >
+							<DockPanel>
+								<GroupBox DockPanel.Dock="Bottom" Header="Create:"  FontSize="13" >
+									<DockPanel Height="26" >
+										<Button Command="{Binding Ressources/CreateNodeCommand, Mode=OneWay}" IsDefault="True" DockPanel.Dock="Right" Width="48" Margin="5,0,0,0" ToolTip="Anlegen">
+											<Image Source="../Images/add.png"></Image>
+										</Button>
+										<TextBox VerticalContentAlignment="Center" Name="NodeName" Text="{Binding Ressources/NewNodeText, UpdateSourceTrigger=PropertyChanged}" GotFocus="TextBox_GotFocus">
+											<TextBox.InputBindings>
+												<KeyBinding Key="Enter" Modifiers="Shift+Alt" Command="{Binding ElementName=Self, Path=FocusDefaultCommand}"/>
+											</TextBox.InputBindings>
+										</TextBox>
+									</DockPanel>
+								</GroupBox>
+								<GroupBox DockPanel.Dock="Bottom" Header="Search:"  FontSize="13" >
+									<DockPanel Height="26" >
+										<Button Command="{Binding OpenSettingsCommand}" Name="settingsButton" DockPanel.Dock="Right" Width="48" Margin="5,0,0,0" ToolTip="Einstellungen">
+											<Image Source="../Images/settings.png"></Image>
+										</Button>
+										<TextBox VerticalContentAlignment="Center" GotFocus="TextBox_GotFocus" Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" >
+											<TextBox.Style>
+												<Style TargetType="TextBox" BasedOn="{StaticResource ResourceKey=TextBoxDefault}">
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding HasInvalidSearchInput, UpdateSourceTrigger=PropertyChanged}" Value="True">
+															<Setter Property="TextBox.Background" Value="DarkRed"/>
+															<Setter Property="TextBox.Foreground" Value="White"/>
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</TextBox.Style>
+										</TextBox>
+									</DockPanel>
+								</GroupBox>
+								<GroupBox Header="Tags:">
+									<ListView Background="{StaticResource BrushGray3}" ItemsSource="{Binding Ressources/Nodes, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, NotifyOnSourceUpdated=True}" BorderBrush="{x:Static SystemColors.DesktopBrush}" BorderThickness="1" IsSynchronizedWithCurrentItem="True" Name="NodeList">
+										<ListView.InputBindings>
+											<KeyBinding Key="Delete" Command="{Binding Ressources/DeleteCommand, NotifyOnSourceUpdated=True}" CommandParameter="{Binding Ressources/Nodes/}" />
+										</ListView.InputBindings>
+										<ListView.ItemTemplate>
+											<DataTemplate DataType="{x:Type viewModels:ResxNodeViewModel}">
+												<TextBlock Foreground="{x:Static SystemColors.HighlightTextBrush}" Text="{Binding Path=Tag}"></TextBlock>
+											</DataTemplate>
+										</ListView.ItemTemplate>
+										<ListView.ItemContainerStyle>
+											<Style TargetType="{x:Type ListViewItem}">
+												<Setter Property="Padding" Value="0"></Setter>
+												<Setter Property="Template">
+													<Setter.Value>
+														<ControlTemplate TargetType="{x:Type ListViewItem}">
+															<Border x:Name="Border" Padding="3,2">
+																<Border.Style>
+																	<Style TargetType="{x:Type Border}">
+																		<Setter Property="Background" Value="{StaticResource BrushGray3}"></Setter>
+																	</Style>
+																</Border.Style>
+																<ContentPresenter></ContentPresenter>
+															</Border>
+															<ControlTemplate.Triggers>
+																<Trigger Property="IsSelected" Value="True">
+																	<Setter Property="Background" TargetName="Border" Value="{x:Static SystemColors.ControlDarkBrush}"></Setter>
+																</Trigger>
+															</ControlTemplate.Triggers>
+														</ControlTemplate>
+													</Setter.Value>
+												</Setter>
+
+											</Style>
+										</ListView.ItemContainerStyle>
+									</ListView>
+								</GroupBox>
+							</DockPanel>
+						</DockPanel>
+
+						<DockPanel>
+							<GroupBox Header="Name:" DockPanel.Dock="Top" BorderBrush="Black" FontSize="13">
+								<StackPanel>
+									<TextBox Text="{Binding Ressources/Nodes/Tag, UpdateSourceTrigger=LostFocus, NotifyOnSourceUpdated=True}" Name="TagName" GotFocus="TextBox_GotFocus" >
+										<TextBox.Style>
+											<Style TargetType="TextBox" BasedOn="{StaticResource ResourceKey=TextBoxDefault}">
+												<Style.Triggers>
+													<DataTrigger Binding="{Binding Ressources/Nodes/, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, NotifyOnSourceUpdated=True}" Value="{x:Null}">
+														<Setter Property="UIElement.IsEnabled" Value="False"/>
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</TextBox.Style>
+									</TextBox>
+								</StackPanel>
+							</GroupBox>
+							<GroupBox BorderBrush="Black" FontSize="13" Header="Translations:">
+								<userControls:LanguageControl x:Name="LanguageControl" DisplayNode="{Binding Ressources/Nodes/, Mode=OneWay}">
+									<userControls:LanguageControl.Style>
+										<Style TargetType="{x:Type userControls:LanguageControl}">
+											<Setter Property="Visibility" Value="Visible"/>
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding Ressources/Nodes/, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="{x:Null}">
+													<Setter Property="UIElement.Visibility" Value="Collapsed"/>
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+									</userControls:LanguageControl.Style>
+								</userControls:LanguageControl>
+							</GroupBox>
+						</DockPanel>
+					</DockPanel>
+					
+					
+					<DockPanel.Style>
+						<Style TargetType="{x:Type DockPanel}">
+							<Setter Property="Visibility" Value="Collapsed"></Setter>
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding Path=Settings.LayoutMode}" Value="{x:Static businessObjects:LayoutMode.Horizontal}">
+									<Setter  Property="Visibility" Value="Visible"></Setter>
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</DockPanel.Style>
+				</DockPanel>
+
+				<!-- Vertical Layout -->
+				<DockPanel x:Name="VerticalLayout">
+
+					<DockPanel Dock="Top" Margin="4" >
+						<Button DockPanel.Dock="Right" Margin="6,0,0,0" Width="26" Height="26"  Command="{Binding Ressources/SaveCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" >
+							<Button.Style>
+								<Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Ressources/IsSaving, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+											<Setter Property="Background" Value="DarkRed"/>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Button.Style>
+							<Image ToolTip="Save" Source="../Images/save.png" Width="20"/>
+						</Button>
+						<Button Background="GreenYellow" Width="26" ToolTip="Saving"  DockPanel.Dock="Right" Margin="6,0,0,0" Visibility="{Binding Ressources/IsSaving, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+							<Image Source="../Images/reload.png" Width="20"/>
+						</Button>
+						<Button DockPanel.Dock="Right" Width="26" Margin="6,0,0,0" Command="{Binding Path=Ressources/LoadCommand, Mode=OneWay}" ToolTip="Reload">
+							<Image Source="../Images/reload.png" Width="20"/>
+						</Button>
+						<DockPanel LastChildFill="True" >
+							<ComboBox HorizontalContentAlignment="Stretch" 
+									VerticalContentAlignment="Center" 
+									Focusable="False" 
+									ItemsSource="{Binding RessourcesView, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True, IsAsync=True}" 
+									ItemTemplate="{StaticResource ResourceViewModelComboBoxTemplate}"
+									IsSynchronizedWithCurrentItem="True">
+							</ComboBox>
+						</DockPanel>
+					</DockPanel>
+
+					<DockPanel>
+						<GroupBox DockPanel.Dock="Top" Header="Create:"  FontSize="13" >
+							<DockPanel Height="26" >
+								<Button Command="{Binding Ressources/CreateNodeCommand, Mode=OneWay}" IsDefault="True" DockPanel.Dock="Right" Width="48" Margin="5,0,0,0" ToolTip="Anlegen">
+									<Image Source="../Images/add.png"></Image>
+								</Button>
+								<TextBox VerticalContentAlignment="Center" Text="{Binding Ressources/NewNodeText, UpdateSourceTrigger=PropertyChanged}" GotFocus="TextBox_GotFocus">
+									<TextBox.InputBindings>
+										<KeyBinding Key="Enter" Modifiers="Shift+Alt" Command="{Binding ElementName=Self, Path=FocusDefaultCommand}"/>
+									</TextBox.InputBindings>
+								</TextBox>
+							</DockPanel>
+						</GroupBox>
+
+						<GroupBox DockPanel.Dock="Top" Header="Search:"  FontSize="13" >
+							<DockPanel Height="26" >
+								<Button Command="{Binding OpenSettingsCommand}" DockPanel.Dock="Right" Width="48" Margin="5,0,0,0" ToolTip="Einstellungen">
+									<Image Source="../Images/settings.png"></Image>
+								</Button>
+								<TextBox VerticalContentAlignment="Center" GotFocus="TextBox_GotFocus" Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" >
+									<TextBox.Style>
+										<Style TargetType="TextBox" BasedOn="{StaticResource ResourceKey=TextBoxDefault}">
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding HasInvalidSearchInput, UpdateSourceTrigger=PropertyChanged}" Value="True">
+													<Setter Property="TextBox.Background" Value="DarkRed"/>
+													<Setter Property="TextBox.Foreground" Value="White"/>
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+									</TextBox.Style>
+								</TextBox>
+							</DockPanel>
+						</GroupBox>
+						
+						<GroupBox DockPanel.Dock="Bottom" BorderBrush="Black" FontSize="13" Header="Translations:">
+							<userControls:LanguageControl DisplayNode="{Binding Ressources/Nodes/, Mode=OneWay}">
+								<userControls:LanguageControl.Style>
+									<Style TargetType="{x:Type userControls:LanguageControl}">
+										<Setter Property="Visibility" Value="Visible"/>
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding Ressources/Nodes/, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="{x:Null}">
+												<Setter Property="UIElement.Visibility" Value="Collapsed"/>
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</userControls:LanguageControl.Style>
+							</userControls:LanguageControl>
+						</GroupBox>
+						
+						<GroupBox DockPanel.Dock="Bottom"  Header="Name:" BorderBrush="Black" FontSize="13">
+							<StackPanel>
+								<TextBox Text="{Binding Ressources/Nodes/Tag, UpdateSourceTrigger=LostFocus, NotifyOnSourceUpdated=True}" GotFocus="TextBox_GotFocus" >
+									<TextBox.Style>
+										<Style TargetType="TextBox" BasedOn="{StaticResource ResourceKey=TextBoxDefault}">
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding Ressources/Nodes/, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, NotifyOnSourceUpdated=True}" Value="{x:Null}">
+													<Setter Property="UIElement.IsEnabled" Value="False"/>
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+									</TextBox.Style>
+								</TextBox>
+							</StackPanel>
+						</GroupBox>
+
+
+						<GroupBox Header="Tags:">
+							<ListView Background="{StaticResource BrushGray3}" ItemsSource="{Binding Ressources/Nodes, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, NotifyOnSourceUpdated=True}" BorderBrush="{x:Static SystemColors.DesktopBrush}" BorderThickness="1" IsSynchronizedWithCurrentItem="True">
+								<ListView.InputBindings>
+									<KeyBinding Key="Delete" Command="{Binding Ressources/DeleteCommand, NotifyOnSourceUpdated=True}" CommandParameter="{Binding Ressources/Nodes/}" />
+								</ListView.InputBindings>
+								<ListView.ItemTemplate>
+									<DataTemplate DataType="{x:Type viewModels:ResxNodeViewModel}">
+										<TextBlock Foreground="{x:Static SystemColors.HighlightTextBrush}" Text="{Binding Path=Tag}"></TextBlock>
+									</DataTemplate>
+								</ListView.ItemTemplate>
+								<ListView.ItemContainerStyle>
+									<Style TargetType="{x:Type ListViewItem}">
+										<Setter Property="Padding" Value="0"></Setter>
+										<Setter Property="Template">
+											<Setter.Value>
+												<ControlTemplate TargetType="{x:Type ListViewItem}">
+													<Border x:Name="Border" Padding="3,2">
+														<Border.Style>
+															<Style TargetType="{x:Type Border}">
+																<Setter Property="Background" Value="{StaticResource BrushGray3}"></Setter>
+															</Style>
+														</Border.Style>
+														<ContentPresenter></ContentPresenter>
+													</Border>
+													<ControlTemplate.Triggers>
+														<Trigger Property="IsSelected" Value="True">
+															<Setter Property="Background" TargetName="Border" Value="{x:Static SystemColors.ControlDarkBrush}"></Setter>
+														</Trigger>
+													</ControlTemplate.Triggers>
+												</ControlTemplate>
+											</Setter.Value>
+										</Setter>
+
+									</Style>
+								</ListView.ItemContainerStyle>
+							</ListView>
+						</GroupBox>
+					</DockPanel>
+
+					<DockPanel.Style>
+						<Style TargetType="{x:Type DockPanel}">
+							<Setter Property="Visibility" Value="Collapsed"></Setter>
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding Path=Settings.LayoutMode}" Value="{x:Static businessObjects:LayoutMode.Vertical}">
+									<Setter  Property="Visibility" Value="Visible"></Setter>
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</DockPanel.Style>
+				</DockPanel>
+				
+			</Grid>
+		</Controls:Overlay>
+	</AdornerDecorator>
+</UserControl>

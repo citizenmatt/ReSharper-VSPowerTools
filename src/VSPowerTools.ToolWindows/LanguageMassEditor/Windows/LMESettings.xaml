@@ -5,7 +5,8 @@
 		IsMaximizable="False"
 		IsMinimizable="False"
         Title="Settings" Padding="10" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Topmost="True" ResizeMode="NoResize" xmlns:my="clr-namespace:Microsoft.Expression.Platform.WPF.InstanceBuilders;assembly=Microsoft.Expression.Platform.WPF"
-                                    xmlns:AMLib="http://schemas.amlib.com/winfx/2006/xaml/presentation">
+                                    xmlns:AMLib="http://schemas.amlib.com/winfx/2006/xaml/presentation"
+                                    xmlns:businessObjects="clr-namespace:VSPowerTools.ToolWindows.LanguageMassEditor.BusinessObjects">
 	<Window.Resources>
 
 		<ResourceDictionary>
@@ -39,5 +40,32 @@
                 <CheckBox VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" IsChecked="{Binding IsFullTextSearch}" />
             </Grid>
         </GroupBox>
+		<GroupBox Header="Layout">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="40"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="5"/>
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="26"/>
+				</Grid.RowDefinitions>
+				<Label VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Content="Mode"/>
+				<ComboBox VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" 
+						  SelectedValue="{Binding Path=LayoutMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						  SelectedValuePath="Value"
+						  
+						  IsSynchronizedWithCurrentItem="True"
+						  ItemsSource="{AMLib:EnumSource {x:Type businessObjects:LayoutMode}}">
+					<ComboBox.ItemTemplate>
+<!--						DisplayMemberPath="Description"-->
+						<DataTemplate DataType="AMLib:EnumSource+EnumerationMember">
+							<TextBlock Foreground="{StaticResource BrushGray13}" Text="{Binding Path=Description}"></TextBlock>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
+			</Grid>
+			
+		</GroupBox>
     </StackPanel>
 </AMLib:ThemeWindow>

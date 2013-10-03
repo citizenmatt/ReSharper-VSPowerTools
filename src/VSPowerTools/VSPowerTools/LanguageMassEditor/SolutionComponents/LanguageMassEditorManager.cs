@@ -1,6 +1,7 @@
 using System;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
+using JetBrains.Util;
 using VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels;
 
 namespace VSPowerTools.LanguageMassEditor
@@ -18,7 +19,7 @@ namespace VSPowerTools.LanguageMassEditor
 		{
 			ViewModel = new LanguageMassEditorViewModel();
 			ViewModel.SolutionPath = solution.SolutionFilePath.FullPath;
-			ViewModel.OnCreatorNodeCreated += new ResourceCreatedEventHandler(ViewModel_OnCreatorNodeCreated);
+			ViewModel.OnCreatorNodeCreated += new ResourceCreatedEventHandler(ViewModelOnCreatorNodeCreated);
 		}
 
 		public Action<ResourceCreatedEventArgs> Callback
@@ -27,7 +28,7 @@ namespace VSPowerTools.LanguageMassEditor
 			set;
 		}
 
-		void ViewModel_OnCreatorNodeCreated(ResourceViewModel viewModel, ResourceCreatedEventArgs args)
+		void ViewModelOnCreatorNodeCreated(ResourceViewModel viewModel, ResourceCreatedEventArgs args)
 		{
 			if (Callback != null)
 				Callback(args);

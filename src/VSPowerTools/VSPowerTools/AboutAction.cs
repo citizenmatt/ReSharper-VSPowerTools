@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Windows.Forms;
 using JetBrains.ActionManagement;
 using JetBrains.Application.DataContext;
@@ -16,7 +17,7 @@ namespace VSPowerTools
     public void Execute(IDataContext context, DelegateExecute nextExecute)
     {
       MessageBox.Show(
-        "VSPowerTools\nAndreas Müller\n\nResource File Management, Xaml functionality and other things",
+		string.Format("VSPowerTools v{0}\nAndreas Müller\n\nResource File Management, Xaml functionality and other things", Assembly.GetAssembly(typeof(AboutAction)).GetName().Version),
         "About VSPowerTools",
         MessageBoxButtons.OK,
         MessageBoxIcon.Information);

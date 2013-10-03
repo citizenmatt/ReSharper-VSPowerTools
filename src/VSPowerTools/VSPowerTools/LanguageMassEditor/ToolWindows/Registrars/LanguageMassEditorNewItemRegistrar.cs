@@ -1,5 +1,6 @@
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Asp.CustomReferences;
 using JetBrains.UI.CrossFramework;
 using JetBrains.UI.ToolWindowManagement;
 using VSPowerTools.ToolWindows.LanguageMassEditor.UserControls;
@@ -48,7 +49,7 @@ namespace VSPowerTools.LanguageMassEditor
 		{
 			_instance = _toolWindowClass.RegisterInstance(
 			  _lifetime,
-			  "Neuer Eintrag", // title of your window; tip: StringUtil.MakeTitle
+			  "New entry", // title of your window; tip: StringUtil.MakeTitle
 			  null, // return a System.Drawing.Image to be displayed
 			  (lt, twi) =>
 			  {

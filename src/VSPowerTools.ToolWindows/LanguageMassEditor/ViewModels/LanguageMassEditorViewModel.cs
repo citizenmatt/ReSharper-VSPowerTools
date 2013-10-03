@@ -1,13 +1,17 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Threading;
+using AMLib.Utility;
 using AMLib.VisualStudio;
 using AMLib.Wpf.Common;
 using VSPowerTools.ToolWindows.LanguageMassEditor.BusinessObjects;
@@ -15,9 +19,9 @@ using VSPowerTools.ToolWindows.LanguageMassEditor.Windows;
 
 namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 {
+
 	public class LanguageMassEditorViewModel : DependencyObject, INotifyPropertyChanged
 	{
-
 		public static readonly DependencyProperty IsInDesignerModeProperty =
 			DependencyProperty.Register("IsInDesignerMode", typeof (bool), typeof (LanguageMassEditorViewModel), new PropertyMetadata(default(bool)));
 
@@ -41,13 +45,17 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 			var solution = Solution.FromPath(solutionPath);
 
 			vm.IsApplicationBusy = true;
+			vm.Ressources.Clear();
 
 			foreach (Project project in solution.Projects)
 			{
 				foreach (ResxFile resxFile in project.ResxFiles)
 				{
 					if (!ResxFile.GetLanguageFromPath(resxFile.ResourceFilePath).Equals(ResxFile.InvalidLanguage))
+					{
 						vm.Ressources.AddFile(resxFile);
+						resxFile.OnHasChanged += delegate(ResxFile sender, ResxFileChangedEventArgs eventArgs) { ResourceFileChangedPhysically(sender, vm); };
+					}
 				}
 			}
 
@@ -70,6 +78,45 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 					}));
 				});
 		}
+
+		private static void ResourceFileChangedPhysically(ResxFile sender, LanguageMassEditorViewModel vm)
+		{
+			vm.Dispatcher.BeginInvoke(new Action(() =>
+			{
+				var allFiles = vm.Ressources.Select(s => new { Resource = s, Files = s.Files });
+
+				foreach (var resourceFilePack in allFiles)
+				{
+					//event raised through toolwindow saved. do not request feedback from user.
+					if(!resourceFilePack.Resource.IsFileChangeNotificationEnabled)
+						continue;
+
+					if (resourceFilePack.Files.Any(d => d.Equals(sender)))
+					{
+						var closure = resourceFilePack.Resource;
+						DelayedExecution.Trigger(resourceFilePack.Resource.RessourceDisplayName, delegate { RequestUserReloadConfirmation(closure); });
+					}
+				}
+			}), DispatcherPriority.ApplicationIdle);
+		}
+
+		private static void RequestUserReloadConfirmation(ResourceViewModel resourceViewModel)
+		{
+			TaskScheduler context = TaskScheduler.FromCurrentSynchronizationContext();
+			if (MessageBox.Show("The resource files have been changed externally. Do you want to reload?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+			{
+				resourceViewModel.BuildAsync().ContinueWith(task =>
+				{
+					var view = CollectionViewSource.GetDefaultView(resourceViewModel.Nodes);
+					if (view != null)
+					{
+						view.Refresh();
+					}
+				}, context);
+			}
+		}
+
+		private static readonly MultiPushbackTimer DelayedExecution = new MultiPushbackTimer(100, 1); 
 
 		public event ResourceCreatedEventHandler OnCreatorNodeCreated;
 
@@ -112,8 +159,8 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 			get
 			{
 				if (_ressourcesView == null)
-					_ressourcesView = CollectionViewSource.GetDefaultView(Ressources);
-
+					_ressourcesView = new CollectionViewSource() {Source = Ressources}.View;
+				
 				ApplyRessourceFilter(_ressourcesView);
 
 				return _ressourcesView;
@@ -132,12 +179,83 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 			}
 		}
 
+		public string AssemblyShortNameFilter
+		{
+			get { return _assemblyShortNameFilter; }
+			set
+			{
+				_assemblyShortNameFilter = value;
+				if (RessourcesAssemblyFilterView != null)
+				{
+					RessourcesAssemblyFilterView.Refresh();
+				}
+			}
+		}
+
+		private ICollectionView _ressourcesAssemblyFilterView;
+		public ICollectionView RessourcesAssemblyFilterView
+		{
+			get
+			{
+				if (_ressourcesAssemblyFilterView == null)
+					_ressourcesAssemblyFilterView = new CollectionViewSource() { Source = Ressources }.View;
+
+				ApplyRessourceAssemblyFilter(_ressourcesAssemblyFilterView);
+
+				return _ressourcesAssemblyFilterView;
+			}
+			private set
+			{
+				_ressourcesAssemblyFilterView = value;
+
+				ApplyRessourceAssemblyFilter(_ressourcesAssemblyFilterView);
+
+			}
+		}
+
+		private void ApplyRessourceAssemblyFilter(ICollectionView ressourcesAssemblyFilterView)
+		{
+			if (ressourcesAssemblyFilterView != null && ressourcesAssemblyFilterView.Filter == null)
+			{
+				ressourcesAssemblyFilterView.Filter = AssemblyResourceFilter;
+			}
+		}
+
+		private bool AssemblyResourceFilter(object obj)
+		{
+			var vm = obj as ResourceViewModel;
+			if (vm == null)
+				return false;
+
+			if (vm.Nodes.Count == 0)
+				return false;
+
+			if (vm.ProjectNamespace.ToUpper().Equals(AssemblyShortNameFilter.ToUpper()))
+				return true;
+
+			var target = Ressources.FirstOrDefault(d => d.ProjectNamespace.ToUpper().Equals(AssemblyShortNameFilter.ToUpper()));
+			if (target != null)
+			{
+				if (target.ReferencesNamespaces.Select(s => s.ToUpper()).Any(s => vm.ProjectNamespace.ToUpper().Equals(s)))
+					return true;
+
+				return false;
+			}
+
+			return true;
+			
+		}
+
 		private void ApplyRessourceFilter(ICollectionView ressourcesView)
 		{
 			if (ressourcesView != null && ressourcesView.Filter == null)
 			{
-				ressourcesView.Filter = FilterResourceViewModels;
-				ressourcesView.CurrentChanged += new EventHandler(view_CurrentChanged);
+				Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action<ICollectionView>(view =>
+				{
+					view.Filter = FilterResourceViewModels;
+					view.CurrentChanged += view_CurrentChanged;
+					
+				}), ressourcesView);
 			}
 		}
 
@@ -278,6 +396,8 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 		}
 
 		private LMESettings _openSettings;
+		private string _assemblyShortNameFilter;
+
 		void OpenSettingsExecute()
 		{
 			if (_openSettings != null)

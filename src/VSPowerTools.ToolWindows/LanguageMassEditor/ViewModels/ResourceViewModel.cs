@@ -63,6 +63,59 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 
 		#region Properties
 
+		public bool IsFileChangeNotificationEnabled
+		{
+			get;
+			set;
+		}
+
+		public IEnumerable<string> ReferencesNamespaces
+		{
+			get
+			{
+				if (Files == null || !Files.Any())
+				{
+					yield break;
+				}
+
+				var file = Files.First();
+				if (file != null)
+				{
+					foreach ( var ns in file.Project.ReferencedNamespaces)
+					{
+						yield return ns;
+					}
+				}
+			}
+		}
+
+		public string ProjectNamespace
+		{
+			get
+			{
+				if (Files == null || !Files.Any())
+				{
+					return null;
+				}
+
+				var file = Files.First();
+				if (file != null)
+				{
+					return file.Project.Name;
+				}
+
+				return null;
+			}
+		}
+
+		internal IEnumerable<ResxFile> Files
+		{
+			get
+			{
+				return _resource.Files;
+			}
+		} 
+
 		public ResxNodeCollection Nodes
 		{
 			get
@@ -181,30 +234,6 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 			}
 		}
 
-		public ICommand NodeDownCommand
-		{
-			get
-			{
-				return GetValue(() => NodeDownCommand);
-			}
-			set
-			{
-				SetValue(() => NodeDownCommand, value);
-			}
-		}
-
-		public ICommand NodeUpCommand
-		{
-			get
-			{
-				return GetValue(() => NodeUpCommand);
-			}
-			set
-			{
-				SetValue(() => NodeUpCommand, value);
-			}
-		}
-
 		public ICommand DeleteCommand
 		{
 			get
@@ -264,8 +293,15 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 		{
 			IsLoading = true;
 			Nodes.Clear();
-			Exception ex;
-			Parallel.ForEach(_resource.Files, file => file.Load(out ex));
+			Exception ex = null;
+			
+			foreach ( var file in _resource.Files)
+			{
+				if (!file.Load(out ex))
+				{
+					MessageBox.Show(ex.Message);
+				}
+			}
 
 			LazyDictionary<string, ResxNodeViewModel> cache = new LazyDictionary<string, ResxNodeViewModel>();
 			LazyDictionary<ResxFile, string> fileLanguages = new LazyDictionary<ResxFile, string>();
@@ -277,7 +313,7 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 
 				var language = ResxFile.GetLanguageFromPath(file.ResourceFilePath);
 				fileLanguages.Set(file, language);
-				foreach (var node in file.Nodes)
+				foreach (var node in file.Nodes.Where(d => !d.IsFileReference))
 				{
 					if(tagBuffer.Contains(node.Tag))
 						continue;
@@ -319,13 +355,6 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 
 			CommandManager.InvalidateRequerySuggested();
 		}
-		
-		private bool RequestReload()
-		{
-			// todo am aktuell führt ein build nicht zum korrekten neuladen der ansicht
-			//			return MessageBox.Show("Die Dateien wurden geändert. Soll neu geladen werden?","Frage", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
-			return MessageBox.Show("Die Dateien wurden geändert. Soll neu geladen werden? (BUG: Bitte Neu laden drücken.)", "Frage", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
-		}
 
 		#endregion
 
@@ -333,42 +362,36 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 
 		public ResourceViewModel(Ressource resource) : base()
 		{
+			_resource = resource;
+
 			Nodes = new ResxNodeCollection();
 			DeleteCommand = new RelayCommand(DeleteExecute, o => o != null);
 			CreateNodeCommand = new RelayCommand(o => CreateNodeExecute(), o => CanCreateNode());
 			LoadCommand = new RelayCommand(o => LoadCommandExecute(), o => !IsLoading);
 			AppendCreatorNodeCommand = new RelayCommand(AppendCreatorNodeExecute, o => CreatorNode.IsDirty && !Nodes.Any(d => d.Tag.Equals(CreatorNode.Tag)));
 
-			var firstFile = resource.Files.First();
-			if (firstFile != null)
+			RessourceName = RessourceDisplayName;
+		}
+
+		private void NodeDownExecute(object o)
+		{
+			var view = CollectionViewSource.GetDefaultView(Nodes);
+			if (view != null)
 			{
-				var fullPath = Path.GetDirectoryName(firstFile.ResourceFilePath);
-				var projectPath = Path.GetDirectoryName(firstFile.Project.Path);
-				var resPath = Ressource.GetRessourceName(firstFile.ResourceFilePath);
-
-				var subtraction = fullPath.Replace(projectPath, "");
-
-				// todo am
-				// hier muss optimiert werden. lkönnten zwei unterschiedliche gruppen im hauptverzeichnis liegen :)
-
-				if (subtraction.Length > 0)
-				{
-					if (resPath != null && resPath[1] != null)
-					{
-						RessourceName = string.Format("{0} - {1}/{2}", firstFile.Project.Name, subtraction.TrimStart('/', '\\'), resPath[1]);
-					}
-					else
-					{
-						RessourceName = string.Format("{0} - {1}", firstFile.Project.Name, subtraction.TrimStart('/', '\\'));
-					}
-				}
-				else
-				{
-					RessourceName = string.Format("{0} - {1}", firstFile.Project.Name, resPath[1]);
-				}
+				if (!view.MoveCurrentToNext())
+					view.MoveCurrentToLast();
 			}
+		}
 
-			_resource = resource;
+		private void NodeUpExecute(object o)
+		{
+			var view = CollectionViewSource.GetDefaultView(Nodes);
+			if (view != null)
+			{
+				if (!view.MoveCurrentToPrevious())
+					view.MoveCurrentToFirst();
+			}
+			
 		}
 
 		private void AppendCreatorNodeExecute(object o)
@@ -393,6 +416,7 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 
 				CreatorNode = CreateNode("ResourceName");
 			});
+
 		}
 
 		private void LoadCommandExecute()
@@ -475,6 +499,40 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 			return Task.Factory.StartNew(BuildInternal);
 		}
 
+		public string RessourceDisplayName
+		{
+			get
+			{
+				var firstFile = _resource.Files.First();
+				if (firstFile != null)
+				{
+					var fullPath = Path.GetDirectoryName(firstFile.ResourceFilePath);
+					var projectPath = Path.GetDirectoryName(firstFile.Project.Path);
+					var resPath = Ressource.GetRessourceName(firstFile.ResourceFilePath);
+
+					var subtraction = fullPath.Replace(projectPath, "");
+
+					if (subtraction.Length > 0)
+					{
+						if (resPath != null && resPath[1] != null)
+						{
+							return string.Format("{0} - {1}/{2}", firstFile.Project.Name, subtraction.TrimStart('/', '\\'), resPath[1]);
+						}
+						else
+						{
+							return string.Format("{0} - {1}", firstFile.Project.Name, subtraction.TrimStart('/', '\\'));
+						}
+					}
+					else
+					{
+						return string.Format("{0} - {1}", firstFile.Project.Name, resPath[1]);
+					}
+				}
+
+				return null;
+			}
+		}
+
 		#endregion
 
 		#region Overrides of SaveableViewModelBase
@@ -482,6 +540,8 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 		public override Task Save()
 		{
 			TaskScheduler ui = TaskScheduler.FromCurrentSynchronizationContext();
+			IsFileChangeNotificationEnabled = false;
+
 			return Task.Factory.StartNew(() =>
 			{
 				IsSaving = true;
@@ -492,20 +552,31 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 				foreach (var file in _resource.Files)
 				{
 					var converted = CreateFromNodes(Nodes.Select(n => new Tuple<string,ResxAttributeViewModel>(n.Tag, n.Attributes.FirstOrDefault(a => a.Language.Equals(file.FileLanguage)))));
-					file.Nodes.Clear();
+
+					/**
+					 * we need to skip clearing nodes, which are file references
+					 */
+					for (int i = file.Nodes.Count - 1; i >= 0; i--)
+					{
+						if(!file.Nodes[i].IsFileReference)
+							file.Nodes.RemoveAt(i);
+					}
+
 					foreach (ResxNode resxNode in converted)
 					{
 						file.Nodes.Add(resxNode);
 					}
+
 					if (!file.Save(out ex))
 					{
-						MessageBox.Show(string.Format("Fehler beim Speichern. {0}", ex.Message));
+						MessageBox.Show(string.Format("An error occured while attempting to save a file.\n{0}", ex.Message));
 					}
 				}
 			})
 			.ContinueWith(task =>
 			{
 				IsSaving = false;
+				IsFileChangeNotificationEnabled = true;
 			}, ui);
 		}
 
@@ -513,10 +584,7 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 		{
 			foreach (Tuple<string, ResxAttributeViewModel> tuple in select)
 			{
-				var result = new ResxNode();
-				result.Tag = tuple.Item1;
-				result.Value = tuple.Item2.Value;
-				result.Comment = tuple.Item2.Comment;
+				var result = new ResxNode(false, tuple.Item1, tuple.Item2.Comment, tuple.Item2.Value, null);
 
 				yield return result;
 			}

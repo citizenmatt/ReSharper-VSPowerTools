@@ -18,7 +18,7 @@ using VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels;
 
 namespace VSPowerTools.LanguageMassEditor
 {
-	[ContextAction(Name = "LanguageMassEditor Eintrag anlegen", Description = "LanguageMassEditor Eintrag anlegen", Group = "XAML")]
+	[ContextAction(Name = "LanguageMassEditor - New *.resx-entry", Description = "LanguageMassEditor - New *.resx-entry", Group = "XAML")]
 	public class LanguageMassEditorCreateNewResourceXamlAction : ContextActionBase
 	{
 		private readonly XamlContextActionDataProvider _provider;
@@ -34,12 +34,13 @@ namespace VSPowerTools.LanguageMassEditor
 			var manager = solution.GetComponent<LanguageMassEditorManager>();
 			var window = solution.GetComponent<LanguageMassEditorNewItemRegistrar>();
 			window.ViewModel = manager.ViewModel;
+			window.ViewModel.AssemblyShortNameFilter = _provider.Project.Name;
+
 			manager.Callback = new Action<ResourceCreatedEventArgs>(args =>
 			{
 				var locker = solution.GetComponent<IShellLocks>();
 				locker.ReentrancyGuard.ExecuteOrQueue("replaceReferences", delegate
 				{
-
 					using (PsiTransactionCookie.CreateAutoCommitCookieWithCachesUpdate(_currentTreeNode.GetPsiServices(), "updateXamlReferences"))
 					{
 						var file = _currentTreeNode.GetContainingFile();
@@ -66,7 +67,7 @@ namespace VSPowerTools.LanguageMassEditor
 		{
 			get
 			{
-				return "LanguageMassEditor Eintrag anlegen";
+				return "LanguageMassEditor - New *.resx-entry";
 			}
 		}
 

@@ -39,9 +39,6 @@ namespace VSPowerTools.Extensions.Generic
 					var created = factory.CreateUsingDirective(clrNamespace);
 
 					ModificationUtil.AddChildAfter(lastNamespace, created);
-
-					// todo am fix
-//					file.GetPsiServices().MarkAsDirty(file.GetSourceFile());
 				}
 
 				return true;

@@ -1,10 +1,21 @@
-﻿namespace VSPowerTools.ToolWindows.LanguageMassEditor.BusinessObjects
+﻿using System.ComponentModel;
+using VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels;
+
+namespace VSPowerTools.ToolWindows.LanguageMassEditor.BusinessObjects
 {
     public enum CreateBehaviour
     {
         SelectedCreateNode,
         FocusDefaultTranslation
     }
+	
+	public enum LayoutMode
+	{
+		[Description("Horizontal")]
+		Horizontal,
+		[Description("Vertical")]
+		Vertical
+	}
 
     public class Settings : InterfaceObject
     {
@@ -51,7 +62,9 @@
         }
 
         private bool _isFullTextSearch;
-        public bool IsFullTextSearch
+	    private LayoutMode _layoutMode;
+
+	    public bool IsFullTextSearch
         {
             get
             {
@@ -64,12 +77,23 @@
             }
         }
 
-        public Settings()
+	    public LayoutMode LayoutMode
+	    {
+		    get { return _layoutMode; }
+		    set
+		    {
+				_layoutMode = value;
+				RaisePropertyChanged("LayoutMode");
+		    }
+	    }
+
+	    public Settings()
         {
             IsNonEmpty = false;
             IsSearchCaseSensitive = false;
             IsRegexSearch = false;
             IsFullTextSearch = true;
+			LayoutMode = LayoutMode.Vertical;
         }
     }
 }

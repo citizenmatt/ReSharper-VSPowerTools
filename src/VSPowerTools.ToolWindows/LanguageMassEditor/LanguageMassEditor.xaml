@@ -63,91 +63,12 @@
 							<Image Source="Images/reload.png" Width="20"/>
 						</Button>
 						<DockPanel LastChildFill="True" >
-							<ComboBox HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Focusable="False" ItemsSource="{Binding RessourcesView, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True, IsAsync=True}" IsSynchronizedWithCurrentItem="True">
-								<ComboBox.ItemTemplate>
-									<DataTemplate DataType="{x:Type viewModels:ResourceViewModel}">
-										<Grid Margin="10,0">
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="1*"></ColumnDefinition>
-												<ColumnDefinition Width="Auto"></ColumnDefinition>
-												<ColumnDefinition Width="46"></ColumnDefinition>
-											</Grid.ColumnDefinitions>
-											<TextBlock Grid.Column="0" Foreground="{StaticResource BrushGray13}" Text="{Binding Path=RessourceName}"></TextBlock>
-											<TextBlock Grid.Column="1" Foreground="{StaticResource BrushGray13}" HorizontalAlignment="Right" Text="Nodes"></TextBlock>
-											<TextBlock Grid.Column="2" Foreground="{StaticResource BrushGray13}" HorizontalAlignment="Right" Text="{Binding Path=Nodes.Count, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"></TextBlock>
-										</Grid>
-									</DataTemplate>
-								</ComboBox.ItemTemplate>
-								<ComboBox.Template>
-									<ControlTemplate TargetType="ComboBox">
-										<Grid>
-											<ToggleButton
-												ClickMode="Press"
-												Name="ToggleButton"
-												IsChecked="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-												Focusable="False"
-												Template="{StaticResource ComboBoxToggleButtonTemplate}">
-												<ToggleButton.Style>
-													<Style TargetType="ToggleButton">
-														<Setter Property="Cursor" Value="Hand"></Setter>
-														<Style.Triggers>
-															<Trigger Property="ToggleButton.IsChecked" Value="True">
-																<Setter Property="Cursor" Value="{x:Null}"></Setter>
-															</Trigger>
-														</Style.Triggers>
-													</Style>
-												</ToggleButton.Style>
-											</ToggleButton>
-											<ContentPresenter
-												Margin="3,3,28,3"
-												HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-												Name="ContentSite"
-												VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-												ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
-												Content="{TemplateBinding ComboBox.SelectionBoxItem}"
-												IsHitTestVisible="False" />
-											<Popup
-												Placement="Bottom"
-												Name="Popup"
-												Focusable="False"               
-												AllowsTransparency="True"               
-												IsOpen="{TemplateBinding ComboBox.IsDropDownOpen}"
-												PopupAnimation="Slide">
-												<Grid
-													MinWidth="{TemplateBinding FrameworkElement.ActualWidth}"
-													MaxHeight="{TemplateBinding ComboBox.MaxDropDownHeight}"
-													Name="DropDown"
-													SnapsToDevicePixels="True">
-													<Border
-														BorderBrush="{StaticResource BrushGray15}"
-														BorderThickness="1,0,1,1"
-														Name="DropDownBorder"
-														Background="{StaticResource BrushGray4}">
-														<ScrollViewer Margin="0" SnapsToDevicePixels="True">
-															<ItemsPresenter Cursor="Hand" Margin="0,0,22,0"
-																KeyboardNavigation.DirectionalNavigation="Contained" />
-														</ScrollViewer>
-													</Border>
-												</Grid>
-											</Popup>
-										</Grid>
-										<ControlTemplate.Triggers>
-											<Trigger Property="ItemsControl.HasItems" Value="False">
-												<Setter Property="FrameworkElement.MinHeight" TargetName="DropDownBorder" Value="95"/>
-											</Trigger>
-											<Trigger Property="UIElement.IsEnabled" Value="False">
-												<Setter Property="TextElement.Foreground" Value="{StaticResource BrushGray15}"/>
-											</Trigger>
-											<Trigger Property="ItemsControl.IsGrouping" Value="True">
-												<Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-											</Trigger>
-											<Trigger Property="Window.AllowsTransparency" SourceName="Popup" Value="True">
-												<Setter Property="Border.CornerRadius" TargetName="DropDownBorder" Value="0"/>
-												<Setter Property="Border.BorderThickness" TargetName="DropDownBorder" Value="1,0,1,1"/>
-											</Trigger>
-										</ControlTemplate.Triggers>
-									</ControlTemplate>
-								</ComboBox.Template>
+							<ComboBox HorizontalContentAlignment="Stretch" 
+									  VerticalContentAlignment="Center" 
+									  Focusable="False" 
+									  ItemsSource="{Binding RessourcesView, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True, IsAsync=True}" 
+									  ItemTemplate="{StaticResource ResourceViewModelComboBoxTemplate}"
+									  IsSynchronizedWithCurrentItem="True">
 							</ComboBox>
 						</DockPanel>
 					</DockPanel>
