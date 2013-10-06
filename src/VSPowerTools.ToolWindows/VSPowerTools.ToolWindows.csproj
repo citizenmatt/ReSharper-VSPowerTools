@@ -143,11 +143,11 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AMLib 4.0.0.0\AMLib.Wpf\AMLib.Wpf.csproj">
+    <ProjectReference Include="..\..\..\..\SVN\Checkout\AMLib 4.0.0.0\AMLib.Wpf\AMLib.Wpf.csproj">
       <Project>{D1FE2CD8-4311-4B81-BB78-E57A5E155D13}</Project>
       <Name>AMLib.Wpf</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\AMLib 4.0.0.0\AMLib\AMLib.csproj">
+    <ProjectReference Include="..\..\..\..\SVN\Checkout\AMLib 4.0.0.0\AMLib\AMLib.csproj">
       <Project>{CE80D2E9-DFA1-4024-87DE-B6F1D21C9482}</Project>
       <Name>AMLib</Name>
     </ProjectReference>

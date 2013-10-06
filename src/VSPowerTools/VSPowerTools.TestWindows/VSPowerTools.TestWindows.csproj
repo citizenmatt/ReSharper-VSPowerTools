@@ -74,7 +74,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\AMLib 4.0.0.0\AMLib.Wpf\AMLib.Wpf.csproj">
+    <ProjectReference Include="..\..\..\..\..\SVN\Checkout\AMLib 4.0.0.0\AMLib.Wpf\AMLib.Wpf.csproj">
       <Project>{D1FE2CD8-4311-4B81-BB78-E57A5E155D13}</Project>
       <Name>AMLib.Wpf</Name>
     </ProjectReference>

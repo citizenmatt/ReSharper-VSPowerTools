@@ -56,6 +56,7 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 		#region Fields
 
 		private readonly Ressource _resource;
+		private bool _isFileChangeNotificationEnabled;
 
 		#endregion
 
@@ -65,8 +66,17 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 
 		public bool IsFileChangeNotificationEnabled
 		{
-			get;
-			set;
+			get
+			{
+				return Files != null && (!Files.Any() || Files.All(d => d.IsChangeReportingEnabled));
+			}
+			set
+			{
+				foreach (var resxFile in Files)
+				{
+					resxFile.IsChangeReportingEnabled = value;
+				}
+			}
 		}
 
 		public IEnumerable<string> ReferencesNamespaces
@@ -540,11 +550,15 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 		public override Task Save()
 		{
 			TaskScheduler ui = TaskScheduler.FromCurrentSynchronizationContext();
-			IsFileChangeNotificationEnabled = false;
 
 			return Task.Factory.StartNew(() =>
 			{
+				lock (this)
+				{
+					IsFileChangeNotificationEnabled = false;
+				}
 				IsSaving = true;
+
 			}, CancellationToken.None, TaskCreationOptions.None, ui)
 			.ContinueWith(task =>
 			{
@@ -576,7 +590,11 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 			.ContinueWith(task =>
 			{
 				IsSaving = false;
-				IsFileChangeNotificationEnabled = true;
+				lock (this)
+				{
+					IsFileChangeNotificationEnabled = false;
+				}
+
 			}, ui);
 		}
 

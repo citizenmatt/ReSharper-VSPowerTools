@@ -37,7 +37,7 @@ namespace VSPowerTools.TestWindows
 			
 			while (!_stop)
 			{
-				Thread.Sleep(1000);
+				Thread.Sleep(10000);
 				Console.Out.WriteLine("still running. {0}", DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
 			}
 		}

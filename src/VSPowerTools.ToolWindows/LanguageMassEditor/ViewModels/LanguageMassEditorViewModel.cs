@@ -87,10 +87,6 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 
 				foreach (var resourceFilePack in allFiles)
 				{
-					//event raised through toolwindow saved. do not request feedback from user.
-					if(!resourceFilePack.Resource.IsFileChangeNotificationEnabled)
-						continue;
-
 					if (resourceFilePack.Files.Any(d => d.Equals(sender)))
 					{
 						var closure = resourceFilePack.Resource;

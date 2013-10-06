@@ -37,7 +37,6 @@
 			</Controls:Overlay.OverlayContent>
 
 			<Grid>
-				
 				<!-- Horizontal Layout -->
 				<DockPanel x:Name="HorizontalLayout">
 					<StackPanel DockPanel.Dock="Top" Style="{StaticResource ResourceKey=spToolStrip}">
@@ -71,7 +70,7 @@
 							</DockPanel>
 						</DockPanel>
 					</StackPanel>
-					<DockPanel Background="{x:Static SystemColors.DesktopBrush}">
+					<DockPanel Background="{StaticResource BrushGray0}">
 						<DockPanel DockPanel.Dock="Left" MinWidth="200" Width="400" >
 							<DockPanel>
 								<GroupBox DockPanel.Dock="Bottom" Header="Create:"  FontSize="13" >
@@ -146,7 +145,7 @@
 						</DockPanel>
 
 						<DockPanel>
-							<GroupBox Header="Name:" DockPanel.Dock="Top" BorderBrush="Black" FontSize="13">
+							<GroupBox Header="Name:" DockPanel.Dock="Top" BorderBrush="{StaticResource BrushGray0}" FontSize="13">
 								<StackPanel>
 									<TextBox Text="{Binding Ressources/Nodes/Tag, UpdateSourceTrigger=LostFocus, NotifyOnSourceUpdated=True}" Name="TagName" GotFocus="TextBox_GotFocus" >
 										<TextBox.Style>
@@ -161,7 +160,7 @@
 									</TextBox>
 								</StackPanel>
 							</GroupBox>
-							<GroupBox BorderBrush="Black" FontSize="13" Header="Translations:">
+							<GroupBox BorderBrush="{StaticResource BrushGray0}" FontSize="13" Header="Translations:">
 								<userControls:LanguageControl x:Name="LanguageControl" DisplayNode="{Binding Ressources/Nodes/, Mode=OneWay}">
 									<userControls:LanguageControl.Style>
 										<Style TargetType="{x:Type userControls:LanguageControl}">
@@ -192,7 +191,7 @@
 				</DockPanel>
 
 				<!-- Vertical Layout -->
-				<DockPanel x:Name="VerticalLayout">
+				<DockPanel x:Name="VerticalLayout" Visibility="Visible" Background="{StaticResource BrushGray0}">
 
 					<DockPanel Dock="Top" Margin="4" >
 						<Button DockPanel.Dock="Right" Margin="6,0,0,0" Width="26" Height="26"  Command="{Binding Ressources/SaveCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" >
