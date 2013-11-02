@@ -526,7 +526,7 @@ namespace VSPowerTools.ToolWindows.LanguageMassEditor.ViewModels
 					{
 						if (resPath != null && resPath[1] != null)
 						{
-							return string.Format("{0} - {1}/{2}", firstFile.Project.Name, subtraction.TrimStart('/', '\\'), resPath[1]);
+							return string.Format("{0} - {1}\\{2}", firstFile.Project.Name, subtraction.TrimStart('/', '\\'), resPath[1]);
 						}
 						else
 						{

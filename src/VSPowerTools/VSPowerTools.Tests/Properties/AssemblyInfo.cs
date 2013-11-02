@@ -20,7 +20,7 @@ public class TestEnvironmentAssembly : ReSharperTestEnvironmentAssembly
     yield return Assembly.GetExecutingAssembly();
 
 //    #warning you need specify a type from the assembly being tested
-//    yield return typeof(VSPowerTools.ReverseStringAction).Assembly;
+    yield return typeof(VSPowerTools.AboutAction).Assembly;
   }
 
   public override void SetUp()

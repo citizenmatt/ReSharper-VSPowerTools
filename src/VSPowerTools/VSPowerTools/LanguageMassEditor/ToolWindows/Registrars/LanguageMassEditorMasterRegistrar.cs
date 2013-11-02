@@ -12,6 +12,7 @@ namespace VSPowerTools.LanguageMassEditor
 	{
 		private readonly Lifetime _lifetime;
 		private readonly ToolWindowClass _toolWindowClass;
+		private readonly ToolWindowInstance _toolWindowInstance;
 		private ToolWindows.LanguageMassEditor.UserControls.LanguageMassEditor _userControl;
 		public ToolWindows.LanguageMassEditor.UserControls.LanguageMassEditor UserControl
 		{
@@ -46,11 +47,7 @@ namespace VSPowerTools.LanguageMassEditor
 				{
 					return new EitherControl(UserControl);
 				});
-		}
-
-		public void Show()
-		{
-			ToolWindowInstance instance = _toolWindowClass.RegisterInstance(
+			_toolWindowInstance = _toolWindowClass.RegisterInstance(
 				_lifetime,
 				"Overview", // title of your window; tip: StringUtil.MakeTitle
 				null, // return a System.Drawing.Image to be displayed
@@ -58,7 +55,11 @@ namespace VSPowerTools.LanguageMassEditor
 				{
 					return new EitherControl(UserControl);
 				});
-			instance.EnsureControlCreated().Show();
+		}
+
+		public void Show()
+		{
+			_toolWindowInstance.EnsureControlCreated().Show();
 		}
 	}
 }
